@@ -180,15 +180,13 @@
     <div class="share-card">
       <div class="share-card-label">📲 Step 2 — Share With Buyers</div>
 
-      <div class="link-icon-big">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-        </svg>
-      </div>
-
       <div class="share-title">Share Your Boutique</div>
-      <div class="share-sub">Copy the link below and send it to your buyers so they can browse your active inventory and complete purchases.</div>
+      <div class="share-sub">Copy the link below or let buyers scan the QR code to browse your active inventory and complete purchases.</div>
+
+      <!-- QR Code Display -->
+      <div style="background: #fff; padding: 10px; border-radius: 12px; margin: 10px 0; box-shadow: 0 8px 32px rgba(0,0,0,.4);">
+        <img id="qrCodeImg" src="" alt="Store QR Code" style="width: 140px; height: 140px; display: block;">
+      </div>
 
       <div class="badge-row">
         <span class="badge badge-green">
@@ -260,6 +258,10 @@
       
       document.getElementById('urlDisplayText').textContent = currentStoreUrl;
       document.getElementById('visitBtn').href = currentStoreUrl;
+
+      // Generate the QR Code dynamically
+      const qrApiUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(currentStoreUrl);
+      document.getElementById('qrCodeImg').src = qrApiUrl;
     }
 
     function copyUrl() {
