@@ -28,7 +28,7 @@ DB_PATH = BASE_DIR / "chronovault.db"
 
 def get_db_connection():
     # If Vercel Postgres URL is provided, use it
-    pg_url = os.environ.get("POSTGRES_URL")
+    pg_url = os.environ.get("POSTGRES_URL") or os.environ.get("DATABASE_URL")
     if pg_url and HAS_POSTGRES:
         # Vercel provides a postgres:// URL, psycopg2 likes it
         conn = psycopg2.connect(pg_url, cursor_factory=RealDictCursor)
