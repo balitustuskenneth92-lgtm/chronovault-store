@@ -6,7 +6,7 @@ let activeFilter = '';
 
 const fmt = p => '₱' + parseFloat(p||0).toLocaleString('en-PH',{minimumFractionDigits:2});
 
-const apiBase = window.location.protocol === 'file:' ? 'http://localhost:8080' : '';
+const apiBase = 'https://chronovault-store.vercel.app';
 
 // ── Load products from API (persists across sessions) ──
 async function loadProducts() {

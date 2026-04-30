@@ -4,7 +4,7 @@ let buyers   = [];
 let editingId = null;
 let currentImageData = null;
 
-const apiBase = window.location.protocol === 'file:' ? 'http://localhost:8080' : '';
+const apiBase = 'https://chronovault-store.vercel.app';
 
 // ── Load Data ──
 async function loadData() {
