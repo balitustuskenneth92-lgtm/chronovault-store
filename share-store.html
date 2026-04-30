@@ -165,16 +165,14 @@
       <div class="brand-tagline">Luxury Watch Boutique · Share Store Link</div>
     </div>
 
-    <!-- Step 1: Enter public URL -->
+    <!-- Step 1: Your Permanent Public Store URL -->
     <div class="setup-card">
-      <div class="setup-label">⚡ Step 1 — Verify Public Store URL</div>
+      <div class="setup-label">⚡ Step 1 — Your Permanent Public Store URL</div>
       <div class="setup-hint">
-        Run <code>go_public.py</code> to get your ngrok/serveo URL, then make sure it is here.
+        Your store is permanently hosted 24/7 on Vercel. You no longer need to run any local commands!
       </div>
       <div class="url-input-row">
-        <input type="text" class="url-input" id="publicUrlInput"
-          placeholder="https://your-public-url.com"
-          oninput="onUrlInput()">
+        <input type="text" class="url-input" id="publicUrlInput" readonly style="opacity: 0.8; cursor: not-allowed;">
       </div>
     </div>
 
@@ -246,58 +244,22 @@
 
   <script>
     // ── State ──────────────────────────────────────────────────────────────
-    let currentStoreUrl = '';
+    // The Vercel URL is permanent and acts as the root of the store!
+    const VERCEL_URL = 'https://chronovault-store.vercel.app';
+    let currentStoreUrl = VERCEL_URL;
 
     // Auto-detect current URL on load
     (async function() {
-      // 1. First check if there is an active tunnel via our API
-      try {
-        const res = await fetch('http://localhost:8080/api/tunnel');
-        const data = await res.json();
-        if (data && data.url) {
-          document.getElementById('publicUrlInput').value = data.url;
-          onUrlInput();
-          return;
-        }
-      } catch (e) {
-        // server might not be running locally
-      }
-
-      // 2. Check if URL was passed via query param (e.g. from go_public.py)
-      const urlParams = new URLSearchParams(window.location.search);
-      const queryUrl = urlParams.get('url');
-
-      if (queryUrl) {
-        document.getElementById('publicUrlInput').value = queryUrl;
-        localStorage.setItem('cv_public_url', queryUrl);
-      } else {
-        const href = window.location.href;
-        if (href.startsWith('http://') || href.startsWith('https://')) {
-          const base = href.replace(/[^/]*$/, '');
-          const detected = base + 'store.html';
-          if (!href.startsWith('file://') && !href.includes('localhost')) {
-            document.getElementById('publicUrlInput').value = detected;
-          }
-        }
-        const saved = localStorage.getItem('cv_public_url');
-        if (saved && !document.getElementById('publicUrlInput').value) {
-          document.getElementById('publicUrlInput').value = saved;
-        }
-      }
+      document.getElementById('publicUrlInput').value = VERCEL_URL;
       onUrlInput();
     })();
 
     function onUrlInput() {
-      const val = document.getElementById('publicUrlInput').value.trim();
-      currentStoreUrl = val ? (val.endsWith('store.html') ? val : val.replace(/\/$/, '') + '/store.html') : '';
+      // Always enforce the Vercel URL as the base
+      currentStoreUrl = VERCEL_URL;
       
-      if (currentStoreUrl) {
-        localStorage.setItem('cv_public_url', currentStoreUrl);
-      }
-      
-      document.getElementById('urlDisplayText').textContent =
-        currentStoreUrl || 'No URL set — enter your public URL above';
-      document.getElementById('visitBtn').href = currentStoreUrl || 'store.html';
+      document.getElementById('urlDisplayText').textContent = currentStoreUrl;
+      document.getElementById('visitBtn').href = currentStoreUrl;
     }
 
     function copyUrl() {
