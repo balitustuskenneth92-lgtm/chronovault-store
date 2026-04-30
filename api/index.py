@@ -205,7 +205,7 @@ def health():
 # Fallback routes to serve HTML files directly through FastAPI if Vercel routing fails
 @app.get("/")
 def serve_root():
-    return FileResponse(BASE_DIR / "index.html")
+    return FileResponse(BASE_DIR / "store.html")
 
 @app.get("/{filename}")
 def serve_static(filename: str):
