@@ -207,10 +207,9 @@ def health():
 def serve_root():
     return FileResponse(BASE_DIR / "index.html")
 
-@app.get("/{filename}.html")
-def serve_html(filename: str):
-    file_path = BASE_DIR / f"{filename}.html"
-    if file_path.exists():
+@app.get("/{filename}")
+def serve_static(filename: str):
+    file_path = BASE_DIR / filename
+    if file_path.exists() and file_path.is_file():
         return FileResponse(file_path)
     return {"detail": "Not Found"}
-
