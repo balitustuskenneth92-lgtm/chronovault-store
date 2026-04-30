@@ -4,6 +4,7 @@ import sqlite3
 import urllib.parse
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pathlib import Path
 
 # Try to import psycopg2 for Vercel Postgres
@@ -200,3 +201,16 @@ def health():
         "environment": "vercel",
         "postgres_enabled": HAS_POSTGRES
     }
+
+# Fallback routes to serve HTML files directly through FastAPI if Vercel routing fails
+@app.get("/")
+def serve_root():
+    return FileResponse(BASE_DIR / "index.html")
+
+@app.get("/{filename}.html")
+def serve_html(filename: str):
+    file_path = BASE_DIR / f"{filename}.html"
+    if file_path.exists():
+        return FileResponse(file_path)
+    return {"detail": "Not Found"}
+
