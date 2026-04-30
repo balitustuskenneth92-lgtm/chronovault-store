@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChronoVault | Luxury Watch Boutique</title>
+  <meta name="description" content="Browse and purchase luxury Rolex watches from ChronoVault.">
+  <link rel="stylesheet" href="store.css">
+
+</head>
+<body>
+
+  <div class="wm"><div class="wm-text">CHRONO<br>VAULT</div></div>
+
+  <!-- Navbar -->
+  <nav>
+    <a href="#" class="brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="8"/><polyline points="12 8 12 12 14 14"/><path d="M8 3.5 9.5 6M16 3.5 14.5 6"/>
+      </svg>
+      <span>ChronoVault</span>
+    </a>
+    <div class="nav-links">
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="storeSearch" placeholder="Search watches…" oninput="renderGrid()">
+      </div>
+      <a href="login.html" class="nav-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Admin
+      </a>
+      <button class="cart-btn" onclick="openCart()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        Cart (<span id="cartCount">0</span>)
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="hero-badge">✦ Authenticated &amp; Verified</div>
+    <h1>The Ultimate<br><span class="hero-accent">Rolex Collection</span></h1>
+    <p>Discover our meticulously curated selection of luxury timepieces. Every watch is verified, authenticated, and ready for your wrist.</p>
+  </header>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <div class="container">
+      <div class="filters">
+        <button class="filter-btn active" onclick="setFilter('',this)">All</button>
+        <button class="filter-btn" onclick="setFilter('Submariner',this)">Submariner</button>
+        <button class="filter-btn" onclick="setFilter('Daytona',this)">Daytona</button>
+        <button class="filter-btn" onclick="setFilter('GMT-Master II',this)">GMT-Master II</button>
+        <button class="filter-btn" onclick="setFilter('Datejust',this)">Datejust</button>
+        <button class="filter-btn" onclick="setFilter('Day-Date',this)">Day-Date</button>
+        <button class="filter-btn" onclick="setFilter('Explorer',this)">Explorer</button>
+        <button class="filter-btn" onclick="setFilter('Yacht-Master',this)">Yacht-Master</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Grid -->
+  <section class="container">
+    <div class="grid" id="productGrid"></div>
+  </section>
+
+  <!-- Product Detail Modal -->
+  <div class="modal-overlay" id="productDetailOverlay">
+    <div class="detail-modal">
+      <button class="modal-close-btn" onclick="closeProductDetail()">✕</button>
+      <div id="productDetailBody"></div>
+    </div>
+  </div>
+
+  <!-- Cart Sidebar -->
+  <div class="cart-overlay" id="cartOverlay">
+    <div class="cart-sidebar">
+      <div class="cart-header">
+        <div class="cart-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          Your Cart
+        </div>
+        <button class="close-cart" onclick="closeCart()">✕</button>
+      </div>
+      <div class="cart-items" id="cartItems"></div>
+      <div class="cart-footer">
+        <div class="cart-total">
+          <span>Total:</span><span id="cartTotalVal">₱0</span>
+        </div>
+        <button class="btn-checkout" onclick="openCheckout()">Proceed to Checkout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checkout Modal -->
+  <div class="modal-overlay" id="checkoutOverlay">
+    <div class="modal">
+      <h2 style="margin-bottom:1.5rem;color:#fff">🔒 Secure Checkout</h2>
+      <div class="checkout-summary" id="checkoutSummary"></div>
+      <form id="checkoutForm" onsubmit="processCheckout(event)">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="cName" placeholder="e.g. Juan dela Cruz" required>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="cEmail" placeholder="e.g. juan@email.com" required>
+        </div>
+        <div class="form-group">
+          <label>Contact Number</label>
+          <input type="text" id="cPhone" placeholder="e.g. 0917 123 4567" required>
+        </div>
+        <div class="form-group">
+          <label>Delivery Address</label>
+          <textarea id="cAddress" placeholder="Complete address for delivery..." required></textarea>
+        </div>
+        <div class="modal-footer-btns">
+          <button type="button" class="btn-cancel" onclick="closeCheckout()">Cancel</button>
+          <button type="submit" class="btn-checkout" style="flex:2">Place Order</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="store.js"></script>
+</body>
+</html>

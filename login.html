@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login — ChronoVault</title>
+    <meta name="description" content="Secure admin login portal for ChronoVault — Luxury Rolex Watch Inventory.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --emerald-50: #ecfdf5;
+            --emerald-100: #d1fae5;
+            --emerald-300: #10c77e;
+            --emerald-400: #34d399;
+            --emerald-500: #086a49;
+            --emerald-600: #059669;
+            --emerald-700: #047857;
+            --emerald-800: #065f46;
+            --emerald-900: #064e3b;
+            --emerald-950: #022c22;
+
+            --gold-300: #e8bd15;
+            --gold-400: #fbbf24;
+            --gold-500: #efff11;
+            --gold-600: #d6d911;
+            --gold-700: #b45309;
+            --gold-glow: rgba(251, 191, 36, 0.35);
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* ── Background ─────────────────────────────── */
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg,
+                    var(--emerald-950) 0%,
+                    #0a3327 35%,
+                    #0d2b20 65%,
+                    #071a12 100%);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* animated mesh blobs */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 50% at 15% 20%, rgba(16, 185, 129, .18) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 60% at 85% 80%, rgba(251, 191, 36, .10) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 70% 15%, rgba(52, 211, 153, .12) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── Watermark App Name ──────────────────────── */
+        .watermark {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .watermark-text {
+            font-size: clamp(5rem, 14vw, 14rem);
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 0.9;
+            background: linear-gradient(135deg,
+                    rgba(16, 185, 129, .07) 0%,
+                    rgba(251, 191, 36, .05) 40%,
+                    rgba(16, 185, 129, .04) 70%,
+                    rgba(251, 191, 36, .07) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            user-select: none;
+            white-space: nowrap;
+            animation: pulse-wm 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse-wm {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: .7;
+                transform: scale(1.02);
+            }
+        }
+
+        /* ── Floating particles ──────────────────────── */
+        .particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            animation: float-up linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes float-up {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0);
+            }
+
+            10% {
+                opacity: .6;
+            }
+
+            90% {
+                opacity: .2;
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-100vh) scale(1.2);
+            }
+        }
+
+        /* ── Card wrapper ────────────────────────────── */
+        .login-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 460px;
+            padding: 1.5rem;
+        }
+
+        /* ── Card ────────────────────────────────────── */
+        .login-card {
+            background: rgba(6, 78, 59, 0.25);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid rgba(52, 211, 153, 0.18);
+            border-radius: 28px;
+            padding: 3rem 2.8rem;
+            box-shadow:
+                0 0 0 1px rgba(251, 191, 36, .08) inset,
+                0 32px 64px rgba(0, 0, 0, .5),
+                0 0 80px rgba(16, 185, 129, .08);
+            animation: card-in .7s cubic-bezier(.22, 1, .36, 1) both;
+        }
+
+        @keyframes card-in {
+            from {
+                opacity: 0;
+                transform: translateY(32px) scale(.97);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        /* ── Logo / Icon ─────────────────────────────── */
+        .logo-ring {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 1.6rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--emerald-500), var(--gold-500));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow:
+                0 0 0 8px rgba(16, 185, 129, .12),
+                0 0 24px rgba(251, 191, 36, .25);
+            animation: ring-pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes ring-pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 8px rgba(16, 185, 129, .12), 0 0 24px rgba(251, 191, 36, .25);
+            }
+
+            50% {
+                box-shadow: 0 0 0 14px rgba(16, 185, 129, .08), 0 0 40px rgba(251, 191, 36, .40);
+            }
+        }
+
+        .logo-ring svg {
+            width: 36px;
+            height: 36px;
+            color: #fff;
+        }
+
+        /* ── Headings ────────────────────────────────── */
+        .card-label {
+            text-align: center;
+            font-size: .75rem;
+            font-weight: 600;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--gold-400);
+            margin-bottom: .4rem;
+        }
+
+        .card-title {
+            text-align: center;
+            font-size: 1.85rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--emerald-300) 0%, var(--gold-400) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: .45rem;
+            line-height: 1.1;
+        }
+
+        .card-sub {
+            text-align: center;
+            font-size: .85rem;
+            color: rgba(209, 250, 229, .45);
+            margin-bottom: 2.2rem;
+        }
+
+        /* ── Divider ─────────────────────────────────── */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(52, 211, 153, .3), rgba(251, 191, 36, .3), transparent);
+            margin-bottom: 2rem;
+        }
+
+        /* ── Form fields ─────────────────────────────── */
+        .field {
+            margin-bottom: 1.25rem;
+        }
+
+        .field label {
+            display: block;
+            font-size: .78rem;
+            font-weight: 600;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--emerald-300);
+            margin-bottom: .5rem;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap .icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            color: var(--emerald-400);
+            pointer-events: none;
+            transition: color .3s;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: .85rem 1rem .85rem 2.75rem;
+            background: rgba(6, 78, 59, .35);
+            border: 1.5px solid rgba(52, 211, 153, .22);
+            border-radius: 12px;
+            color: #e6fff5;
+            font-size: .95rem;
+            font-family: 'Outfit', sans-serif;
+            outline: none;
+            transition: border-color .3s, box-shadow .3s, background .3s;
+        }
+
+        .input-wrap input::placeholder {
+            color: rgba(110, 231, 183, .35);
+        }
+
+        .input-wrap input:focus {
+            border-color: var(--gold-400);
+            background: rgba(6, 78, 59, .5);
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, .15), 0 0 20px rgba(251, 191, 36, .08);
+        }
+
+        .input-wrap input:focus+.icon,
+        .input-wrap:focus-within .icon {
+            color: var(--gold-400);
+        }
+
+        /* toggle password */
+        .toggle-pw {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: rgba(110, 231, 183, .45);
+            padding: 0;
+            display: flex;
+            transition: color .25s;
+        }
+
+        .toggle-pw:hover {
+            color: var(--gold-400);
+        }
+
+        .toggle-pw svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* ── Remember / Forgot ───────────────────────── */
+        .row-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.8rem;
+            font-size: .82rem;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            color: rgba(209, 250, 229, .6);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .remember input[type="checkbox"] {
+            accent-color: var(--emerald-500);
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+        }
+
+        .forgot {
+            color: var(--gold-400);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color .25s, text-shadow .25s;
+        }
+
+        .forgot:hover {
+            color: var(--gold-300);
+            text-shadow: 0 0 12px rgba(251, 191, 36, .5);
+        }
+
+        /* ── Submit button ───────────────────────────── */
+        .btn-login {
+            width: 100%;
+            padding: .95rem;
+            border: none;
+            border-radius: 14px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: .06em;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--emerald-500) 0%, var(--gold-500) 100%);
+            color: #fff;
+            box-shadow:
+                0 4px 20px rgba(16, 185, 129, .35),
+                0 2px 8px rgba(251, 191, 36, .25);
+            transition: transform .2s, box-shadow .3s;
+        }
+
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--emerald-400), var(--gold-400));
+            opacity: 0;
+            transition: opacity .3s;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 8px 30px rgba(16, 185, 129, .45),
+                0 4px 16px rgba(251, 191, 36, .35);
+        }
+
+        .btn-login:hover::before {
+            opacity: 1;
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .btn-login span {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+        }
+
+        /* ripple */
+        .btn-login .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .35);
+            transform: scale(0);
+            animation: ripple .6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* ── Error message ───────────────────────────── */
+        .error-msg {
+            display: none;
+            align-items: center;
+            gap: .5rem;
+            margin-top: 1rem;
+            padding: .75rem 1rem;
+            background: rgba(220, 38, 38, .15);
+            border: 1px solid rgba(220, 38, 38, .35);
+            border-radius: 10px;
+            font-size: .84rem;
+            color: #fca5a5;
+            animation: shake .4s ease;
+        }
+
+        .error-msg.show {
+            display: flex;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20%,
+            60% {
+                transform: translateX(-6px);
+            }
+
+            40%,
+            80% {
+                transform: translateX(6px);
+            }
+        }
+
+        /* ── Footer text ─────────────────────────────── */
+        .card-footer {
+            text-align: center;
+            margin-top: 1.8rem;
+            font-size: .75rem;
+            color: rgba(110, 231, 183, .3);
+        }
+
+        .card-footer span {
+            background: linear-gradient(90deg, var(--emerald-400), var(--gold-400));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+        }
+
+        /* ── Loading spinner on btn ──────────────────── */
+        .spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid rgba(255, 255, 255, .35);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ── Responsive ──────────────────────────────── */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 2.2rem 1.6rem;
+            }
+
+            .card-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Background watermark -->
+    <div class="watermark">
+        <div class="watermark-text">CHRONO<br>VAULT</div>
+    </div>
+
+    <!-- Floating particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Login card -->
+    <div class="login-wrapper">
+        <div class="login-card">
+
+            <!-- Logo ring -->
+            <div class="logo-ring">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="8"/>
+                    <polyline points="12 8 12 12 14 14"/>
+                    <path d="M8 3.5 9.5 6M16 3.5 14.5 6"/>
+                </svg>
+            </div>
+
+            <p class="card-label">⌚ Luxury Watch Vault</p>
+            <h1 class="card-title">ChronoVault</h1>
+            <p class="card-sub">Sign in to access your Rolex inventory dashboard</p>
+
+            <div class="divider"></div>
+
+            <form id="loginForm" novalidate>
+
+                <!-- Email -->
+                <div class="field">
+                    <label for="email">Email Address</label>
+                    <div class="input-wrap">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            <polyline points="22,6 12,13 2,6" />
+                        </svg>
+                        <input type="email" id="email" name="email" placeholder="Enter your email"
+                            autocomplete="email" required>
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="field">
+                    <label for="password">Password</label>
+                    <div class="input-wrap">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                        <input type="password" id="password" name="password" placeholder="Enter password"
+                            autocomplete="current-password" required>
+                        <button type="button" class="toggle-pw" id="togglePw" aria-label="Toggle password visibility">
+                            <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Remember / Forgot -->
+                <div class="row-meta">
+                    <label class="remember">
+                        <input type="checkbox" id="remember">
+                        Remember me
+                    </label>
+                    <a href="#" class="forgot">Forgot password?</a>
+                </div>
+
+                <!-- Error -->
+                <div class="error-msg" id="errorMsg" role="alert">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                    <span id="errorText">Invalid username or password.</span>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="btn-login" id="loginBtn">
+                    <span>
+                        <div class="spinner" id="spinner"></div>
+                        <span id="btnText">Sign In</span>
+                        <svg id="btnIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                    </span>
+                </button>
+
+            </form>
+
+            <div class="card-footer">
+                Protected by &nbsp;<span>ChronoVault</span>&nbsp; &nbsp;•&nbsp; &nbsp;Admin Access Only
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        /* ── Particles ──────────────────────────────── */
+        const container = document.getElementById('particles');
+        const colors = [
+            'rgba(16,185,129,.55)',
+            'rgba(52,211,153,.45)',
+            'rgba(251,191,36,.50)',
+            'rgba(245,158,11,.40)',
+            'rgba(110,231,183,.35)',
+        ];
+
+        for (let i = 0; i < 32; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            const size = Math.random() * 6 + 2;
+            p.style.cssText = `
+                width:${size}px; height:${size}px;
+                left:${Math.random() * 100}%;
+                bottom:${-10}px;
+                background:${colors[Math.floor(Math.random() * colors.length)]};
+                animation-duration:${Math.random() * 12 + 8}s;
+                animation-delay:${Math.random() * 10}s;
+            `;
+            container.appendChild(p);
+        }
+
+        /* ── Toggle password ───────────────────────── */
+        const togglePw = document.getElementById('togglePw');
+        const pwInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eyeIcon');
+        const eyeOpen = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+        const eyeOff = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>`;
+
+        togglePw.addEventListener('click', () => {
+            const show = pwInput.type === 'password';
+            pwInput.type = show ? 'text' : 'password';
+            eyeIcon.innerHTML = show ? eyeOff : eyeOpen;
+        });
+
+        /* ── Ripple effect ─────────────────────────── */
+        document.getElementById('loginBtn').addEventListener('click', function (e) {
+            const btn = this;
+            const circle = document.createElement('span');
+            const rect = btn.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            circle.className = 'ripple';
+            circle.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX - rect.left - size / 2}px;top:${e.clientY - rect.top - size / 2}px`;
+            btn.appendChild(circle);
+            setTimeout(() => circle.remove(), 700);
+        });
+
+        /* ── Login logic ───────────────────────────── */
+        const ADMIN_EMAIL = 'chronovault@gmail.com';
+        const ADMIN_PASS  = 'chrono#123';
+
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMsg');
+            const spinner = document.getElementById('spinner');
+            const btnText = document.getElementById('btnText');
+            const btnIcon = document.getElementById('btnIcon');
+            const loginBtn = document.getElementById('loginBtn');
+
+            // hide previous error
+            errorMsg.classList.remove('show');
+
+
+            // show loading
+            spinner.style.display = 'block';
+            btnText.textContent = 'Signing in…';
+            btnIcon.style.display = 'none';
+            loginBtn.disabled = true;
+
+            // simulate async auth
+            setTimeout(() => {
+                spinner.style.display = 'none';
+                btnText.textContent = 'Sign In';
+                btnIcon.style.display = '';
+                loginBtn.disabled = false;
+
+                if (email === ADMIN_EMAIL && password === ADMIN_PASS) {
+                    // success → redirect to dashboard
+                    loginBtn.style.background = 'linear-gradient(135deg,#10b981,#34d399)';
+                    btnText.textContent = '✓ Access Granted';
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 800);
+                } else {
+                    // fail
+                    document.getElementById('errorText').textContent =
+                        !email ? 'Please enter your email address.' :
+                            !password ? 'Please enter your password.' :
+                                'Invalid email or password. Try again.';
+                    errorMsg.classList.add('show');
+                }
+            }, 1200);
+        });
+    </script>
+</body>
+
+</html>

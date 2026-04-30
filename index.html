@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>ChronoVault — Luxury Watch Inventory</title>
+  <meta name="description" content="ChronoVault admin dashboard — luxury watch inventory management.">
+  <link rel="stylesheet" href="dashboard.css">
+
+</head>
+<body>
+
+<div class="wm"><div class="wm-text">CHRONO<br>VAULT</div></div>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="ring">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="8"/><polyline points="12 8 12 12 14 14"/>
+          <path d="M8 3.5 9.5 6M16 3.5 14.5 6"/>
+        </svg>
+      </div>
+      <div>
+        <h2>ChronoVault</h2>
+        <p>Luxury Watch Panel</p>
+      </div>
+    </div>
+    <nav>
+      <div class="nav-item active" id="navWatches" onclick="showSection('products',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><polyline points="12 8 12 12 14 14"/></svg>
+        Watches
+      </div>
+      <div class="nav-item" id="navInventory" onclick="showSection('inventory',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="5" rx="1"/><rect x="2" y="10" width="20" height="5" rx="1"/><rect x="2" y="17" width="20" height="5" rx="1"/></svg>
+        View Inventory
+      </div>
+      <div class="nav-item" id="navBuyers" onclick="showSection('buyers',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Buyers
+      </div>
+      <a class="nav-item" href="share-store.html" target="_blank" style="text-decoration:none;color:inherit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+        Share Store Link
+      </a>
+
+    </nav>
+    <!-- Gemini API Key settings -->
+    <div class="api-key-section">
+      <button class="api-key-toggle" onclick="toggleApiKey()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        AI Settings
+        <svg id="apiKeyChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12" style="margin-left:auto;transition:.2s"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="api-key-body" id="apiKeyBody" style="display:none">
+        <p class="api-key-hint">Enter your <strong>Gemini API key</strong> for accurate AI watch scanning. <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--go4)">Get free key ↗</a></p>
+        <input type="password" id="geminiApiKey" placeholder="AIza…" class="api-key-input" oninput="saveApiKey()">
+        <div id="apiKeyStatus" class="api-key-status"></div>
+      </div>
+    </div>
+
+    <button class="signout-btn" onclick="signOut()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Sign Out
+    </button>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <h1 id="pageTitle">Rolex Collection</h1>
+      <div class="topbar-right">
+        <button class="btn btn-primary" id="addWatchBtn" onclick="openModal()" style="display:flex">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Watch
+        </button>
+        <div class="admin-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Welcome, <span>Admin</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ═══ WATCHES (Table) SECTION ═══ -->
+      <div class="section-panel active" id="panelWatches">
+        <div class="stats" id="stats">
+          <div class="stat-card">
+            <div class="stat-label">Total Watches</div>
+            <div class="stat-val" id="statTotal">0</div>
+            <div class="stat-sub">All pieces</div>
+            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="8"/><polyline points="12 8 12 12 14 14"/></svg></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">In Stock</div>
+            <div class="stat-val" id="statIn">0</div>
+            <div class="stat-sub">Available</div>
+            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Low Stock</div>
+            <div class="stat-val" id="statLow">0</div>
+            <div class="stat-sub">Need restock</div>
+            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg></div>
+          </div>
+          <div class="stat-card stat-card-value">
+            <div class="stat-label">Out of Stock</div>
+            <div class="stat-val" id="statOut">0</div>
+            <div class="stat-sub">Unavailable</div>
+            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></div>
+          </div>
+          <div class="stat-card stat-card-value">
+            <div class="stat-label">💰 Total Inventory Value</div>
+            <div class="stat-val" id="statValue" style="font-size:1.35rem">₱0</div>
+            <div class="stat-sub">Price × Qty, all watches</div>
+            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          </div>
+        </div>
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <span class="section-title">🕐 Rolex Inventory</span>
+            <div class="search-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="searchInput" placeholder="Search model, ref, collection…" oninput="renderTable()">
+            </div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th><th>Watch</th><th>Collection</th><th>Ref No.</th>
+                <th>Case / Movement</th><th>Qty</th><th>Price</th><th>Status</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="productTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ═══ INVENTORY GRID SECTION ═══ -->
+      <div class="section-panel" id="panelInventory">
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <span class="section-title">🗂 Inventory View</span>
+            <div class="search-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="invSearch" placeholder="Search watches…" oninput="renderInventoryGrid()">
+            </div>
+          </div>
+        </div>
+        <div class="inv-grid" id="invGrid"></div>
+      </div>
+
+      <!-- ═══ BUYERS SECTION ═══ -->
+      <div class="section-panel" id="panelBuyers">
+        <div class="stats">
+          <div class="stat-card">
+            <div class="stat-label">Total Sales</div>
+            <div class="stat-val" id="bStatTotal">0</div>
+            <div class="stat-sub">All transactions</div>
+            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Revenue</div>
+            <div class="stat-val" id="bStatRev" style="font-size:1.3rem">₱0</div>
+            <div class="stat-sub">Paid sales</div>
+            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Paid</div>
+            <div class="stat-val" id="bStatPaid">0</div>
+            <div class="stat-sub">Completed</div>
+            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Pending</div>
+            <div class="stat-val" id="bStatPending">0</div>
+            <div class="stat-sub">Awaiting payment</div>
+            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          </div>
+        </div>
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <span class="section-title">👤 Buyer Records</span>
+            <div class="search-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="buyerSearch" placeholder="Search buyer, watch, ref…" oninput="renderBuyers()">
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="openSaleModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Record Sale
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th><th>Buyer</th><th>Watch Purchased</th><th>Ref No.</th>
+                <th>Sale Price</th><th>Date</th><th>Payment</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="buyerTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ADD / EDIT WATCH MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal modal-wide">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Add Rolex Watch</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <form id="productForm" onsubmit="saveProduct(event)">
+      <input type="hidden" id="editId">
+      <div class="form-grid">
+
+        <!-- ── AI SCAN BANNER ── -->
+        <div class="form-group full" style="margin-bottom:.25rem">
+          <div class="ai-scan-top-bar">
+            <div class="ai-scan-top-info">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <span>Upload a watch photo to auto-fill all details instantly</span>
+            </div>
+            <label class="ai-scan-btn" for="aiScanInput">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              🤖 Scan &amp; Auto-fill
+              <input type="file" id="aiScanInput" accept="image/*" style="display:none" onchange="handleAIScanUpload(event)">
+            </label>
+          </div>
+          <!-- Scanning overlay -->
+          <div class="ai-scanning-bar" id="aiScanningBar" style="display:none">
+            <div class="ai-scan-ring"></div>
+            <span id="aiScanProgress">Analyzing watch image…</span>
+          </div>
+          <!-- Result banner -->
+          <div class="ai-result-banner" id="aiResultBanner" style="display:none">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>
+            <span id="aiResultText">AI filled the details — review and adjust if needed.</span>
+            <button type="button" class="ai-clear-btn" onclick="clearAIScan()">✕ Clear</button>
+          </div>
+        </div>
+
+        <div class="form-section-label">⌚ Watch Identity</div>
+        <div class="form-group full">
+          <label>Model Name</label>
+          <input type="text" id="fName" placeholder="e.g. Rolex Submariner Date" required>
+        </div>
+        <div class="form-group">
+          <label>Reference Number</label>
+          <input type="text" id="fRef" placeholder="e.g. 126610LN">
+        </div>
+        <div class="form-group">
+          <label>Collection</label>
+          <select id="fCategory" required>
+            <option value="">Select Collection…</option>
+            <option>Submariner</option><option>Daytona</option><option>GMT-Master II</option>
+            <option>Datejust</option><option>Day-Date</option><option>Explorer</option>
+            <option>Yacht-Master</option><option>Sea-Dweller</option><option>Milgauss</option>
+            <option>Sky-Dweller</option><option>Air-King</option><option>Oyster Perpetual</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-section-label">🔩 Case &amp; Bracelet</div>
+        <div class="form-group">
+          <label>Case Size (mm)</label>
+          <input type="number" id="fCaseSize" placeholder="e.g. 41" min="20" max="60" step="0.5">
+        </div>
+        <div class="form-group">
+          <label>Case Material</label>
+          <select id="fCaseMat">
+            <option value="">Select…</option>
+            <option>Oystersteel</option><option>Yellow Gold (18k)</option><option>White Gold (18k)</option>
+            <option>Everose Gold (18k)</option><option>Two-Tone (Steel &amp; Gold)</option>
+            <option>Platinum</option><option>Titanium</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Bracelet / Strap</label>
+          <select id="fBracelet">
+            <option value="">Select…</option>
+            <option>Oyster Bracelet</option><option>Jubilee Bracelet</option>
+            <option>President Bracelet</option><option>Pearlmaster Bracelet</option>
+            <option>Rubber Strap (Oysterflex)</option><option>Leather Strap</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Dial Color</label>
+          <input type="text" id="fDial" placeholder="e.g. Black, Blue, Meteorite">
+        </div>
+        <div class="form-section-label">⚙️ Movement &amp; Condition</div>
+        <div class="form-group">
+          <label>Movement</label>
+          <select id="fMovement">
+            <option value="">Select…</option>
+            <option>Calibre 3235</option><option>Calibre 4130</option><option>Calibre 3186</option>
+            <option>Calibre 3255</option><option>Calibre 9001</option><option>Calibre 9002</option>
+            <option>Calibre 2236</option><option>Calibre 2238</option><option>Other Rolex Calibre</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Condition</label>
+          <select id="fCondition">
+            <option value="">Select…</option>
+            <option>Brand New (Unworn)</option><option>Excellent (Like New)</option>
+            <option>Very Good</option><option>Good (Minor Wear)</option><option>Fair (Visible Wear)</option>
+          </select>
+        </div>
+        <div class="form-section-label">💰 Inventory &amp; Pricing</div>
+        <div class="form-group">
+          <label>Quantity</label>
+          <input type="number" id="fQty" placeholder="0" min="0" required>
+        </div>
+        <div class="form-group">
+          <label>Price (₱)</label>
+          <input type="number" id="fPrice" placeholder="0.00" min="0" step="0.01" required>
+        </div>
+        <div class="form-group full">
+          <label>SKU / Serial</label>
+          <input type="text" id="fSku" placeholder="e.g. RLX-SUB-001">
+        </div>
+        <div class="form-section-label">📷 Watch Photo</div>
+        <div class="form-group full">
+          <label>Watch Image (set separately or auto-filled by scan above)</label>
+          <div class="ai-scan-wrap">
+            <div class="img-upload-zone" id="uploadZone">
+              <input type="file" id="fImage" accept="image/*" onchange="handleImageUpload(event)">
+              <div class="upload-icon">📷</div>
+              <p>Click or drag &amp; drop — AI will scan and fill details automatically</p>
+            </div>
+            <div class="ai-scanning" id="aiScanning">
+              <div class="ai-scan-ring"></div>
+              <div class="ai-scan-text">AI Scanning Watch…</div>
+            </div>
+          </div>
+          <img id="imgPreview" class="img-preview" alt="Watch preview">
+          <button type="button" class="remove-img-btn" id="removeImgBtn" onclick="removeImage()">✕ Remove Photo</button>
+          <div class="ai-banner" id="aiBanner">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span id="aiBannerText">AI detected watch details — review and confirm below.</span>
+          </div>
+        </div>
+        <div class="form-section-label">📝 Notes</div>
+        <div class="form-group full">
+          <label>Description / Notes</label>
+          <textarea id="fDesc" placeholder="Box &amp; papers, service history, special features…"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn-save" id="saveBtn">💾 Save Watch</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- PRODUCT DETAIL MODAL (for inventory view) -->
+<div class="modal-overlay" id="detailOverlay">
+  <div class="modal modal-wide" id="detailModal" style="max-width:580px">
+    <div class="modal-header">
+      <div class="modal-title" id="detailTitle">Watch Details</div>
+      <button class="modal-close" onclick="closeDetailModal()">✕</button>
+    </div>
+    <div id="detailBody"></div>
+  </div>
+</div>
+
+<!-- RECORD SALE MODAL -->
+<div class="modal-overlay" id="saleOverlay">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header">
+      <div class="modal-title" id="saleTitleEl">💰 Record Sale</div>
+      <button class="modal-close" onclick="closeSaleModal()">✕</button>
+    </div>
+    <form id="saleForm" onsubmit="saveSale(event)">
+      <input type="hidden" id="sEditId">
+      <div class="form-grid">
+        <div class="form-section-label">👤 Buyer Information</div>
+        <div class="form-group">
+          <label>Buyer Full Name</label>
+          <input type="text" id="sBuyerName" placeholder="e.g. Juan dela Cruz" required>
+        </div>
+        <div class="form-group">
+          <label>Contact / Phone</label>
+          <input type="text" id="sBuyerContact" placeholder="e.g. 09171234567">
+        </div>
+        <div class="form-group full">
+          <label>Email Address</label>
+          <input type="email" id="sBuyerEmail" placeholder="buyer@email.com">
+        </div>
+        <div class="form-group full">
+          <label>Address</label>
+          <input type="text" id="sBuyerAddr" placeholder="City, Province">
+        </div>
+        <div class="form-section-label">⌚ Watch Sold</div>
+        <div class="form-group full">
+          <label>Watch Model</label>
+          <select id="sSoldWatch" required><option value="">Select watch from inventory…</option></select>
+        </div>
+        <div class="form-group">
+          <label>Ref No.</label>
+          <input type="text" id="sSoldRef" placeholder="Auto-filled" readonly style="opacity:.6">
+        </div>
+        <div class="form-group">
+          <label>Sale Price (₱)</label>
+          <input type="number" id="sSalePrice" placeholder="0.00" min="0" step="0.01" required>
+        </div>
+        <div class="form-group">
+          <label>Sale Date</label>
+          <input type="date" id="sSaleDate" required>
+        </div>
+        <div class="form-group">
+          <label>Payment Status</label>
+          <select id="sPayStatus" required>
+            <option value="">Select…</option>
+            <option>Paid</option><option>Pending</option><option>Cancelled</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label>Notes</label>
+          <textarea id="sSaleNotes" placeholder="Delivery details, special requests…"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" onclick="closeSaleModal()">Cancel</button>
+        <button type="submit" class="btn-save">💾 Save Sale</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- SUCCESS POPUP -->
+<div class="success-overlay" id="successOverlay" onclick="closeSuccessPopup()">
+  <div class="success-popup" onclick="event.stopPropagation()">
+    <button class="success-close" onclick="closeSuccessPopup()">✕</button>
+    <div class="success-ring">
+      <div class="success-icon" id="successPopupIcon">✓</div>
+    </div>
+    <div class="success-title" id="successPopupTitle">Success!</div>
+    <div class="success-sub" id="successPopupSub"></div>
+    <div class="success-bar"><div class="success-bar-fill"></div></div>
+  </div>
+</div>
+
+<!-- QUICK STOCK UPDATE MODAL -->
+<div class="modal-overlay" id="stockOverlay">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header">
+      <div class="modal-title">📦 Update Stock</div>
+      <button class="modal-close" onclick="closeStockModal()">✕</button>
+    </div>
+    <div style="margin-bottom:1.25rem">
+      <div id="stockWatchName" style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:.25rem"></div>
+      <div id="stockWatchRef" style="font-family:monospace;font-size:.8rem;color:var(--muted)"></div>
+    </div>
+
+    <!-- Current qty display -->
+    <div class="stock-current-row">
+      <span style="font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600">Current Stock</span>
+      <span class="stock-current-val" id="stockCurrentVal">0</span>
+    </div>
+
+    <!-- Quick ±  buttons -->
+    <div class="stock-quick-row">
+      <button class="stock-adj-btn" onclick="adjustStockBy(-10)">−10</button>
+      <button class="stock-adj-btn" onclick="adjustStockBy(-5)">−5</button>
+      <button class="stock-adj-btn" onclick="adjustStockBy(-1)">−1</button>
+      <button class="stock-adj-btn stock-adj-add" onclick="adjustStockBy(1)">+1</button>
+      <button class="stock-adj-btn stock-adj-add" onclick="adjustStockBy(5)">+5</button>
+      <button class="stock-adj-btn stock-adj-add" onclick="adjustStockBy(10)">+10</button>
+    </div>
+
+    <!-- Manual input -->
+    <div class="form-group" style="margin-top:1.25rem">
+      <label>Set Exact Quantity</label>
+      <div style="display:flex;gap:.6rem;align-items:center">
+        <input type="number" id="stockNewQty" min="0" placeholder="Enter new quantity" style="flex:1">
+        <button type="button" class="btn-save" style="padding:.72rem 1.1rem;white-space:nowrap" onclick="applyExactStock()">Set</button>
+      </div>
+    </div>
+
+    <!-- New qty preview -->
+    <div class="stock-preview-row" id="stockPreviewRow" style="display:none">
+      <span style="color:var(--muted);font-size:.85rem">New quantity will be:</span>
+      <span class="stock-preview-val" id="stockPreviewVal">0</span>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn-cancel" onclick="closeStockModal()">Cancel</button>
+      <button type="button" class="btn-save" id="stockSaveBtn" onclick="saveStock()">💾 Save Stock</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast toast-success" id="toast"></div>
+
+<script src="dashboard.js"></script>
+</body>
+</html>
