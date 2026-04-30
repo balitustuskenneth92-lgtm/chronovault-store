@@ -336,22 +336,22 @@ async function scanWithGemini(base64DataUrl, apiKey, progressEl) {
   const base64 = base64DataUrl.split(',')[1];
   const mimeType = base64DataUrl.split(';')[0].split(':')[1] || 'image/jpeg';
 
-  const prompt = `You are a luxury watch expert. Analyze this watch image carefully and extract all visible information.
+  const prompt = `You are a Master Horologist and an expert in luxury watches, specifically Rolex. Analyze this watch image with extreme precision and extract all visible information. Pay close attention to subtle details: text on the dial, bezel markings, crown guards, lug shapes, and bracelet style to accurately identify the specific reference number.
 Return ONLY a valid JSON object — no markdown, no extra text, just the raw JSON.
 
 Use these exact field names and allowed values:
 {
   "name": "exact full model name (e.g. Rolex Submariner Date 41)",
   "category": "one of: Submariner, Daytona, GMT-Master II, Datejust, Day-Date, Explorer, Yacht-Master, Sea-Dweller, Milgauss, Sky-Dweller, Air-King, Oyster Perpetual, Other",
-  "ref": "reference number if visible, else empty string",
+  "ref": "exact reference number if you can determine it based on visual cues, else empty string",
   "caseSize": "case diameter as number only (e.g. 41), estimate if not visible",
   "caseMat": "one of: Oystersteel, Yellow Gold (18k), White Gold (18k), Everose Gold (18k), Two-Tone (Steel & Gold), Platinum, Titanium",
   "bracelet": "one of: Oyster Bracelet, Jubilee Bracelet, President Bracelet, Pearlmaster Bracelet, Rubber Strap (Oysterflex), Leather Strap",
-  "dial": "color and description of the dial (e.g. Black, Sunburst Blue, Meteorite)",
+  "dial": "exact color and texture of the dial (e.g. Black, Sunburst Blue, Meteorite, Champagne)",
   "movement": "one of: Calibre 3235, Calibre 4130, Calibre 3186, Calibre 3255, Calibre 9001, Calibre 9002, Calibre 2236, Calibre 2238, Calibre 3285, Calibre 3230, Calibre 3131, Other Rolex Calibre",
   "condition": "one of: Brand New (Unworn), Excellent (Like New), Very Good, Good (Minor Wear), Fair (Visible Wear)",
-  "dial_markers": "describe hour markers (e.g. Chromalight, Arabic, Roman)",
-  "bezel": "describe bezel (e.g. Cerachrom, Tachymeter, Fluted)",
+  "dial_markers": "describe hour markers (e.g. Chromalight, Arabic, Roman, Diamond)",
+  "bezel": "describe bezel material and type (e.g. Cerachrom, Tachymeter, Fluted, Smooth)",
   "price": estimated retail price in Philippine Pesos as integer (no symbols),
   "confidence": "high, medium, or low",
   "notes": "any other notable features visible in the image"
@@ -369,10 +369,10 @@ Be as accurate as possible. If you cannot determine a value with confidence, use
     generationConfig: { temperature: 0.1, maxOutputTokens: 1024 }
   };
 
-  progressEl.textContent = 'Processing response…';
+  progressEl.textContent = 'Processing response (High Accuracy Mode)…';
 
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`,
     { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
   );
 
