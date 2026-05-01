@@ -15,13 +15,15 @@ async function loadData() {
         buyers = await buyerRes.json();
 
         // One-time migration: If API is empty but localStorage has data, migrate it!
-        if (products.length === 0 && localStorage.getItem('cv_watches')) {
+        if (products.length === 0 && localStorage.getItem('cv_watches') && !localStorage.getItem('cv_migrated')) {
             products = JSON.parse(localStorage.getItem('cv_watches'));
             await fetch(apiBase + '/api/watches', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(products) });
+            localStorage.setItem('cv_migrated', 'true');
         }
-        if (buyers.length === 0 && localStorage.getItem('cv_buyers')) {
+        if (buyers.length === 0 && localStorage.getItem('cv_buyers') && !localStorage.getItem('cv_migrated_buyers')) {
             buyers = JSON.parse(localStorage.getItem('cv_buyers'));
             await fetch(apiBase + '/api/buyers', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(buyers) });
+            localStorage.setItem('cv_migrated_buyers', 'true');
         }
 
         renderTable(); updateStats(); renderBuyers(); updateBuyerStats();
@@ -39,16 +41,18 @@ async function save() {
     try {
         await fetch(apiBase + '/api/watches', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(products) });
     } catch(e) {
-        localStorage.setItem('cv_watches', JSON.stringify(products)); 
+        console.error("Failed to save to API", e);
     }
+    localStorage.setItem('cv_watches', JSON.stringify(products)); 
     renderTable(); updateStats(); 
 }
 async function saveBuyers() { 
     try {
         await fetch(apiBase + '/api/buyers', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(buyers) });
     } catch(e) {
-        localStorage.setItem('cv_buyers', JSON.stringify(buyers)); 
+        console.error("Failed to save buyers to API", e);
     }
+    localStorage.setItem('cv_buyers', JSON.stringify(buyers)); 
     renderBuyers(); updateBuyerStats(); 
 }
 
