@@ -334,7 +334,31 @@ function handleAIScanUpload(e) {
 
 // ── Gemini Vision API call ──
 async function scanWithGemini(base64DataUrl, apiKey, progressEl) {
-  progressEl.textContent = 'AI analyzing watch image…';
+  progressEl.textContent = 'Finding best AI model…';
+
+  // Fetch available models
+  let modelName = 'models/gemini-2.5-flash'; // default fallback
+  try {
+    const modelsRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+    if (modelsRes.ok) {
+      const modelsData = await modelsRes.json();
+      const availableModels = modelsData.models || [];
+      // Prefer newer flash models, fallback to pro, then whatever is available
+      const preferred = availableModels.find(m => m.name.includes('gemini-3.1-flash') && m.supportedGenerationMethods?.includes('generateContent')) ||
+                        availableModels.find(m => m.name.includes('gemini-3.0-flash') && m.supportedGenerationMethods?.includes('generateContent')) ||
+                        availableModels.find(m => m.name.includes('gemini-2.5-flash') && m.supportedGenerationMethods?.includes('generateContent')) ||
+                        availableModels.find(m => m.name.includes('gemini-2.0-flash') && m.supportedGenerationMethods?.includes('generateContent')) ||
+                        availableModels.find(m => m.name.includes('gemini') && m.name.includes('flash') && m.supportedGenerationMethods?.includes('generateContent')) ||
+                        availableModels.find(m => m.name.includes('gemini') && m.supportedGenerationMethods?.includes('generateContent'));
+      if (preferred) {
+        modelName = preferred.name;
+      }
+    }
+  } catch (err) {
+    console.warn("Could not fetch models list, using default.", err);
+  }
+
+  progressEl.textContent = `AI analyzing watch image with ${modelName.replace('models/', '')}…`;
 
   // Strip the data:image/...;base64, prefix
   const base64 = base64DataUrl.split(',')[1];
@@ -376,7 +400,7 @@ Be as accurate as possible. If you cannot determine a value with confidence, use
   progressEl.textContent = 'Processing response (High Accuracy Mode)…';
 
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/${modelName}:generateContent?key=${apiKey}`,
     { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
   );
 
