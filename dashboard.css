@@ -155,12 +155,12 @@ nav{flex:1;padding:1.2rem 0}
 .stock-preview-val{font-size:1.4rem;font-weight:800;color:#6ee7b7}
 
 /* Table */
-.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;backdrop-filter:blur(14px)}
-table{width:100%;border-collapse:collapse}
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow-x:auto;backdrop-filter:blur(14px)}
+table{width:100%;border-collapse:collapse;white-space:nowrap}
 thead tr{background:rgba(4,26,18,.55);border-bottom:1px solid var(--border)}
 th{padding:.9rem 1rem;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;
   color:var(--go4);text-align:left;font-weight:700}
-td{padding:.9rem 1rem;font-size:.88rem;border-bottom:1px solid rgba(52,211,153,.07);vertical-align:middle}
+td{padding:.9rem 1rem;font-size:.88rem;border-bottom:1px solid rgba(52,211,153,.07);vertical-align:middle;max-width:300px;overflow:hidden;text-overflow:ellipsis}
 tbody tr:last-child td{border-bottom:none}
 tbody tr{transition:.2s}
 tbody tr:hover{background:rgba(16,185,129,.05)}
