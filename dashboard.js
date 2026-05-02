@@ -479,6 +479,14 @@ function runAIFallback(filename) {
   return !!match;
 }
 
+// ── Generate SKU ──
+function generateSku() {
+  const cat = document.getElementById('fCategory').value || 'WTC';
+  const prefix = cat.replace(/[^a-zA-Z0-9]/g, '').substring(0, 3).toUpperCase() || 'CV';
+  const randomNum = Math.floor(100000 + Math.random() * 900000);
+  document.getElementById('fSku').value = `CV-${prefix}-${randomNum}`;
+}
+
 // ── Save product ──
 function saveProduct(e) {
   e.preventDefault();
