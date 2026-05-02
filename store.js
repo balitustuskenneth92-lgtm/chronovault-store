@@ -11,11 +11,16 @@ const apiBase = 'https://chronovault-store.vercel.app';
 // ── Load products from API (persists across sessions) ──
 async function loadProducts() {
   try {
-    const res = await fetch(apiBase + '/api/watches');
-    products = await res.json();
+    const [wRes, bRes] = await Promise.all([
+      fetch(apiBase + '/api/watches'),
+      fetch(apiBase + '/api/buyers')
+    ]);
+    products = await wRes.json();
+    buyers = await bRes.json();
   } catch (e) {
     // Fallback to localStorage if server is not available
     products = JSON.parse(localStorage.getItem('cv_watches') || '[]');
+    buyers = JSON.parse(localStorage.getItem('cv_buyers') || '[]');
   }
   renderGrid();
   updateCartUI();
@@ -269,12 +274,21 @@ async function processCheckout(e) {
 
   // Persist everything back to server
   try {
-    await fetch(apiBase + '/api/checkout', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ newBuyers: buyers, newWatches: products })
-    });
+    const [wRes, bRes] = await Promise.all([
+      fetch(apiBase + '/api/watches', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(products)
+      }),
+      fetch(apiBase + '/api/buyers', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(buyers)
+      })
+    ]);
+    if (!wRes.ok || !bRes.ok) throw new Error('API save failed');
   } catch (err) {
+    console.error("Failed to save to API, using localStorage", err);
     // Fallback to localStorage if server is unavailable
     localStorage.setItem('cv_buyers',  JSON.stringify(buyers));
     localStorage.setItem('cv_watches', JSON.stringify(products));
