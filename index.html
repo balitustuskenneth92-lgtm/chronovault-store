@@ -340,14 +340,14 @@
             <button type="button" class="btn-save" style="padding:.7rem 1rem;" onclick="generateSku()" title="Auto-generate SKU">🎲 Generate</button>
           </div>
         </div>
-        <div class="form-section-label">📷 Watch Media (Photos & Video)</div>
+        <div class="form-section-label">📷 Watch Media (Photos Only)</div>
         <div class="form-group full">
-          <label>Upload Media (You can select multiple photos/videos. First item is the cover)</label>
+          <label>Upload Media (You can select multiple photos. First item is the cover)</label>
           <div class="ai-scan-wrap">
             <div class="img-upload-zone" id="uploadZone">
-              <input type="file" id="fMedia" multiple onchange="handleMediaUpload(event)">
+              <input type="file" id="fMedia" accept="image/*" multiple onchange="handleMediaUpload(event)">
               <div class="upload-icon">📷</div>
-              <p>Click or drag &amp; drop — AI will scan the first photo automatically. You can also upload any file format.</p>
+              <p>Click or drag &amp; drop — AI will scan the first photo automatically.</p>
             </div>
             <div class="ai-scanning" id="aiScanning">
               <div class="ai-scan-ring"></div>
@@ -355,9 +355,9 @@
             </div>
           </div>
           <div style="margin-top: 1rem;">
-            <label>Or Add Media via URL (Link)</label>
+            <label>Or Add Photo via URL (Link)</label>
             <div style="display:flex;gap:.5rem;align-items:center;">
-              <input type="text" id="mediaUrlInput" placeholder="Paste image or video link here..." style="flex:1;">
+              <input type="text" id="mediaUrlInput" placeholder="Paste image link here..." style="flex:1;">
               <button type="button" class="btn-save" style="padding:.7rem 1rem;" onclick="addMediaFromUrl()">Add Link</button>
             </div>
           </div>

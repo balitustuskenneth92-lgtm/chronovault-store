@@ -252,11 +252,14 @@ function handleMediaUpload(e) {
       showToast(`File ${file.name} is too large (max 10MB)`, 'error');
       continue;
     }
+    // ensure it's an image
+    if (!file.type.startsWith('image/')) {
+       showToast(`File ${file.name} is not an image`, 'error');
+       continue;
+    }
     const reader = new FileReader();
     reader.onload = ev => {
-      const isVideo = file.type.startsWith('video/') || file.name.match(/\.(mp4|webm|ogg|mov|mkv|avi)$/i);
-      const type = isVideo ? 'video' : 'image';
-      currentMediaData.push({ type: type, data: ev.target.result });
+      currentMediaData.push({ type: 'image', data: ev.target.result });
       renderMediaPreview();
     };
     reader.readAsDataURL(file);
@@ -266,8 +269,7 @@ function handleMediaUpload(e) {
 function addMediaFromUrl() {
   const url = document.getElementById('mediaUrlInput').value.trim();
   if(!url) return;
-  const isVideo = url.match(/\.(mp4|webm|ogg|mov|mkv|avi)$/i) || url.toLowerCase().includes('video');
-  currentMediaData.push({ type: isVideo ? 'video' : 'image', data: url });
+  currentMediaData.push({ type: 'image', data: url });
   renderMediaPreview();
   document.getElementById('mediaUrlInput').value = '';
 }
