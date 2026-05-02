@@ -410,6 +410,7 @@ Use these exact field names and allowed values:
 {
   "name": "exact full model name (e.g. Rolex Submariner Date 41)",
   "category": "one of: Submariner, Daytona, GMT-Master II, Datejust, Day-Date, Explorer, Yacht-Master, Sea-Dweller, Milgauss, Sky-Dweller, Air-King, Oyster Perpetual, Other",
+  "gender": "one of: Men's, Women's, Unisex",
   "ref": "exact reference number if you can determine it based on visual cues, else empty string",
   "caseSize": "case diameter as number only (e.g. 41), estimate if not visible",
   "caseMat": "one of: Oystersteel, Yellow Gold (18k), White Gold (18k), Everose Gold (18k), Two-Tone (Steel & Gold), Platinum, Titanium",
@@ -463,6 +464,7 @@ Be as accurate as possible. If you cannot determine a value with confidence, use
   // Apply to form
   if (parsed.name)      document.getElementById('fName').value      = parsed.name;
   if (parsed.category)  document.getElementById('fCategory').value  = parsed.category;
+  if (parsed.gender)    document.getElementById('fGender').value    = parsed.gender;
   if (parsed.ref)       document.getElementById('fRef').value       = parsed.ref;
   if (parsed.caseSize)  document.getElementById('fCaseSize').value  = parsed.caseSize;
   if (parsed.caseMat)   document.getElementById('fCaseMat').value   = parsed.caseMat;
@@ -489,23 +491,24 @@ Be as accurate as possible. If you cannot determine a value with confidence, use
 function runAIFallback(filename) {
   const fn = (filename || '').toLowerCase();
   const db = [
-    { test:/sub/i,        name:'Rolex Submariner Date 41',  category:'Submariner',    ref:'126610LN',   caseMat:'Oystersteel',           caseSize:'41', bracelet:'Oyster Bracelet',    dial:'Black Chromalight',  movement:'Calibre 3235', condition:'Brand New (Unworn)', price:750000 },
-    { test:/daytona/i,    name:'Rolex Cosmograph Daytona',  category:'Daytona',       ref:'116500LN',   caseMat:'Oystersteel',           caseSize:'40', bracelet:'Oyster Bracelet',    dial:'White Panda',        movement:'Calibre 4130', condition:'Brand New (Unworn)', price:1200000 },
-    { test:/gmt/i,        name:'Rolex GMT-Master II',       category:'GMT-Master II', ref:'126710BLRO', caseMat:'Oystersteel',           caseSize:'40', bracelet:'Jubilee Bracelet',   dial:'Black',              movement:'Calibre 3285', condition:'Brand New (Unworn)', price:900000 },
-    { test:/datejust/i,   name:'Rolex Datejust 41',         category:'Datejust',      ref:'126334',     caseMat:'Oystersteel',           caseSize:'41', bracelet:'Jubilee Bracelet',   dial:'Silver',             movement:'Calibre 3235', condition:'Brand New (Unworn)', price:600000 },
-    { test:/day.?date/i,  name:'Rolex Day-Date 40',         category:'Day-Date',      ref:'228238',     caseMat:'Yellow Gold (18k)',     caseSize:'40', bracelet:'President Bracelet', dial:'Champagne',          movement:'Calibre 3255', condition:'Brand New (Unworn)', price:2500000 },
-    { test:/explorer/i,   name:'Rolex Explorer II 42',      category:'Explorer',      ref:'226570',     caseMat:'Oystersteel',           caseSize:'42', bracelet:'Oyster Bracelet',    dial:'White',              movement:'Calibre 3285', condition:'Brand New (Unworn)', price:550000 },
-    { test:/yacht/i,      name:'Rolex Yacht-Master 40',     category:'Yacht-Master',  ref:'116621',     caseMat:'Two-Tone (Steel & Gold)',caseSize:'40', bracelet:'Oyster Bracelet',    dial:'Rhodium',            movement:'Calibre 3135', condition:'Brand New (Unworn)', price:850000 },
-    { test:/sea.?dwell/i, name:'Rolex Sea-Dweller 43',      category:'Sea-Dweller',   ref:'126600',     caseMat:'Oystersteel',           caseSize:'43', bracelet:'Oyster Bracelet',    dial:'Black',              movement:'Calibre 3235', condition:'Brand New (Unworn)', price:950000 },
-    { test:/milgauss/i,   name:'Rolex Milgauss 40',         category:'Milgauss',      ref:'116400GV',   caseMat:'Oystersteel',           caseSize:'40', bracelet:'Oyster Bracelet',    dial:'Black Z-Blue',       movement:'Calibre 3131', condition:'Brand New (Unworn)', price:700000 },
-    { test:/sky.?dwell/i, name:'Rolex Sky-Dweller 42',      category:'Sky-Dweller',   ref:'326933',     caseMat:'Two-Tone (Steel & Gold)',caseSize:'42', bracelet:'Jubilee Bracelet',   dial:'White',              movement:'Calibre 9001', condition:'Brand New (Unworn)', price:1800000 },
-    { test:/air.?king/i,  name:'Rolex Air-King 40',         category:'Air-King',      ref:'126900',     caseMat:'Oystersteel',           caseSize:'40', bracelet:'Oyster Bracelet',    dial:'Black',              movement:'Calibre 3230', condition:'Brand New (Unworn)', price:480000 },
-    { test:/oyster/i,     name:'Rolex Oyster Perpetual 41', category:'Oyster Perpetual',ref:'124300',   caseMat:'Oystersteel',           caseSize:'41', bracelet:'Oyster Bracelet',    dial:'Candy Green',        movement:'Calibre 3230', condition:'Brand New (Unworn)', price:420000 },
+    { test:/sub/i,        name:'Rolex Submariner Date 41',  category:'Submariner',    ref:'126610LN',   caseMat:'Oystersteel',           caseSize:'41', bracelet:'Oyster Bracelet',    dial:'Black Chromalight',  movement:'Calibre 3235', condition:'Brand New (Unworn)', price:750000, gender:"Men's" },
+    { test:/daytona/i,    name:'Rolex Cosmograph Daytona',  category:'Daytona',       ref:'116500LN',   caseMat:'Oystersteel',           caseSize:'40', bracelet:'Oyster Bracelet',    dial:'White Panda',        movement:'Calibre 4130', condition:'Brand New (Unworn)', price:1200000, gender:"Men's" },
+    { test:/gmt/i,        name:'Rolex GMT-Master II',       category:'GMT-Master II', ref:'126710BLRO', caseMat:'Oystersteel',           caseSize:'40', bracelet:'Jubilee Bracelet',   dial:'Black',              movement:'Calibre 3285', condition:'Brand New (Unworn)', price:900000, gender:"Men's" },
+    { test:/datejust/i,   name:'Rolex Datejust 41',         category:'Datejust',      ref:'126334',     caseMat:'Oystersteel',           caseSize:'41', bracelet:'Jubilee Bracelet',   dial:'Silver',             movement:'Calibre 3235', condition:'Brand New (Unworn)', price:600000, gender:"Men's" },
+    { test:/day.?date/i,  name:'Rolex Day-Date 40',         category:'Day-Date',      ref:'228238',     caseMat:'Yellow Gold (18k)',     caseSize:'40', bracelet:'President Bracelet', dial:'Champagne',          movement:'Calibre 3255', condition:'Brand New (Unworn)', price:2500000, gender:"Men's" },
+    { test:/explorer/i,   name:'Rolex Explorer II 42',      category:'Explorer',      ref:'226570',     caseMat:'Oystersteel',           caseSize:'42', bracelet:'Oyster Bracelet',    dial:'White',              movement:'Calibre 3285', condition:'Brand New (Unworn)', price:550000, gender:"Men's" },
+    { test:/yacht/i,      name:'Rolex Yacht-Master 40',     category:'Yacht-Master',  ref:'116621',     caseMat:'Two-Tone (Steel & Gold)',caseSize:'40', bracelet:'Oyster Bracelet',    dial:'Rhodium',            movement:'Calibre 3135', condition:'Brand New (Unworn)', price:850000, gender:"Men's" },
+    { test:/sea.?dwell/i, name:'Rolex Sea-Dweller 43',      category:'Sea-Dweller',   ref:'126600',     caseMat:'Oystersteel',           caseSize:'43', bracelet:'Oyster Bracelet',    dial:'Black',              movement:'Calibre 3235', condition:'Brand New (Unworn)', price:950000, gender:"Men's" },
+    { test:/milgauss/i,   name:'Rolex Milgauss 40',         category:'Milgauss',      ref:'116400GV',   caseMat:'Oystersteel',           caseSize:'40', bracelet:'Oyster Bracelet',    dial:'Black Z-Blue',       movement:'Calibre 3131', condition:'Brand New (Unworn)', price:700000, gender:"Men's" },
+    { test:/sky.?dwell/i, name:'Rolex Sky-Dweller 42',      category:'Sky-Dweller',   ref:'326933',     caseMat:'Two-Tone (Steel & Gold)',caseSize:'42', bracelet:'Jubilee Bracelet',   dial:'White',              movement:'Calibre 9001', condition:'Brand New (Unworn)', price:1800000, gender:"Men's" },
+    { test:/air.?king/i,  name:'Rolex Air-King 40',         category:'Air-King',      ref:'126900',     caseMat:'Oystersteel',           caseSize:'40', bracelet:'Oyster Bracelet',    dial:'Black',              movement:'Calibre 3230', condition:'Brand New (Unworn)', price:480000, gender:"Men's" },
+    { test:/oyster/i,     name:'Rolex Oyster Perpetual 41', category:'Oyster Perpetual',ref:'124300',   caseMat:'Oystersteel',           caseSize:'41', bracelet:'Oyster Bracelet',    dial:'Candy Green',        movement:'Calibre 3230', condition:'Brand New (Unworn)', price:420000, gender:"Men's" },
   ];
   const match = db.find(d => d.test.test(fn));
-  const fill  = match || { name:'Rolex Watch', category:'Submariner', ref:'', caseMat:'Oystersteel', caseSize:'41', bracelet:'Oyster Bracelet', dial:'Black', movement:'Calibre 3235', condition:'Brand New (Unworn)', price:'' };
+  const fill  = match || { name:'Rolex Watch', category:'Submariner', ref:'', caseMat:'Oystersteel', caseSize:'41', bracelet:'Oyster Bracelet', dial:'Black', movement:'Calibre 3235', condition:'Brand New (Unworn)', price:'', gender:"Men's" };
   document.getElementById('fName').value      = fill.name;
   document.getElementById('fCategory').value  = fill.category;
+  if(document.getElementById('fGender')) document.getElementById('fGender').value = fill.gender || '';
   document.getElementById('fRef').value       = fill.ref;
   document.getElementById('fCaseMat').value   = fill.caseMat;
   document.getElementById('fCaseSize').value  = fill.caseSize;
