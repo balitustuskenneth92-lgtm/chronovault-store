@@ -32,31 +32,55 @@ function setFilter(cat, btn) {
 // ── Render Grid ──
 function renderGrid() {
   const q = (document.getElementById('storeSearch').value||'').toLowerCase();
-  const available = products.filter(p => {
+  let available = products.filter(p => {
     const matchQty = parseInt(p.qty||0) > 0;
-    const matchCat = !activeFilter || p.category === activeFilter;
+    
+    let matchCat = true;
+    if (activeFilter === 'Men') {
+      matchCat = p.gender === "Men's";
+    } else if (activeFilter === 'Women') {
+      matchCat = p.gender === "Women's";
+    } else if (activeFilter && activeFilter !== 'Best Deals' && activeFilter !== 'Most Expensive') {
+      matchCat = p.category === activeFilter;
+    }
+
     const matchQ   = !q || (p.name||'').toLowerCase().includes(q) ||
                      (p.category||'').toLowerCase().includes(q) ||
                      (p.ref||'').toLowerCase().includes(q);
     return matchQty && matchCat && matchQ;
   });
 
+  if (activeFilter === 'Best Deals') {
+    available.sort((a,b) => (parseFloat(a.price)||0) - (parseFloat(b.price)||0));
+  } else if (activeFilter === 'Most Expensive') {
+    available.sort((a,b) => (parseFloat(b.price)||0) - (parseFloat(a.price)||0));
+  }
+
   const grid = document.getElementById('productGrid');
   if (!available.length) {
     grid.innerHTML = '<p class="empty-msg">No watches available for this filter.</p>';
     return;
   }
-  grid.innerHTML = available.map(p => `
+  grid.innerHTML = available.map(p => {
+    let mainMedia = '<div class="card-placeholder">⌚</div>';
+    if (p.media && p.media.length > 0) {
+      if (p.media[0].type === 'video') mainMedia = `<video src="${p.media[0].data}" class="card-img" autoplay muted loop playsinline></video>`;
+      else mainMedia = `<img src="${p.media[0].data}" class="card-img" alt="${p.name}">`;
+    } else if (p.image) {
+      mainMedia = `<img src="${p.image}" class="card-img" alt="${p.name}">`;
+    }
+
+    return `
     <div class="card" onclick="openProductDetail('${p.id}')">
       <div class="badge-stock">${p.qty} In Stock</div>
       <div class="card-img-wrap">
-        ${p.image ? `<img src="${p.image}" class="card-img" alt="${p.name}">` : '<div class="card-placeholder">⌚</div>'}
+        ${mainMedia}
         <div class="card-overlay">
           <button class="overlay-view-btn" onclick="event.stopPropagation();openProductDetail('${p.id}')">👁 View Details</button>
         </div>
       </div>
       <div class="card-body">
-        <div class="card-cat">${p.category||'Rolex'}</div>
+        <div class="card-cat">${p.category||'Rolex'} ${p.gender ? '· '+p.gender : ''}</div>
         <div class="card-title">${p.name}</div>
         <div class="card-ref">${p.ref ? 'Ref. '+p.ref : '&nbsp;'}</div>
         ${p.caseMat ? `<div class="card-meta">${p.caseMat}${p.caseSize?' · '+p.caseSize+'mm':''}</div>` : ''}
@@ -67,7 +91,7 @@ function renderGrid() {
         </div>
       </div>
     </div>
-  `).join('');
+  `}).join('');
 }
 
 // ── Product Detail Modal ──
@@ -75,7 +99,7 @@ function openProductDetail(id) {
   const p = products.find(x => x.id===id);
   if (!p) return;
   const specs = [
-    ['Collection', p.category], ['Reference No.', p.ref],
+    ['Collection', p.category], ['Gender', p.gender], ['Reference No.', p.ref],
     ['Case Size',  p.caseSize ? p.caseSize+'mm' : ''],
     ['Case Material', p.caseMat], ['Bracelet / Strap', p.bracelet],
     ['Dial Color', p.dial], ['Movement', p.movement],
@@ -83,12 +107,21 @@ function openProductDetail(id) {
     ['Stock', p.qty+' pcs available']
   ].filter(r=>r[1]);
 
+  let mediaHtml = '<div class="pd-img-placeholder">⌚</div>';
+  if (p.media && p.media.length > 0) {
+    mediaHtml = `<div class="pd-media-gallery" style="display:flex;flex-direction:column;gap:1rem;">` + 
+      p.media.map(m => m.type === 'video' 
+        ? `<video src="${m.data}" class="pd-img" style="border-radius:14px;width:100%;object-fit:cover;" autoplay muted controls loop playsinline></video>`
+        : `<img src="${m.data}" class="pd-img" style="border-radius:14px;width:100%;object-fit:cover;" alt="${p.name}">`
+      ).join('') + `</div>`;
+  } else if (p.image) {
+    mediaHtml = `<img src="${p.image}" class="pd-img" alt="${p.name}">`;
+  }
+
   document.getElementById('productDetailBody').innerHTML = `
     <div class="pd-layout">
       <div class="pd-left">
-        ${p.image
-          ? `<img src="${p.image}" class="pd-img" alt="${p.name}">`
-          : `<div class="pd-img-placeholder">⌚</div>`}
+        ${mediaHtml}
       </div>
       <div class="pd-right">
         <div class="pd-cat">${p.category||'Rolex'}</div>

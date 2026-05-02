@@ -2,7 +2,7 @@
 let products = [];
 let buyers   = [];
 let editingId = null;
-let currentImageData = null;
+let currentMediaData = [];
 
 const apiBase = 'https://chronovault-store.vercel.app';
 
@@ -240,27 +240,55 @@ function closeModal() {
   resetScanUI();
 }
 
-// ── Image handling (photo-only upload) ──
-function handleImageUpload(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    currentImageData = ev.target.result;
-    const preview = document.getElementById('imgPreview');
-    preview.src = currentImageData;
-    preview.classList.add('show');
-    document.getElementById('removeImgBtn').classList.add('show');
-  };
-  reader.readAsDataURL(file);
+// ── Media handling (photo & video upload) ──
+function handleMediaUpload(e) {
+  const files = e.target.files;
+  if (!files || !files.length) return;
+  
+  for(let i=0; i<files.length; i++) {
+    const file = files[i];
+    // Check size limit: 10MB per file to prevent crashing
+    if(file.size > 10 * 1024 * 1024) {
+      showToast(`File ${file.name} is too large (max 10MB)`, 'error');
+      continue;
+    }
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const type = file.type.startsWith('video/') ? 'video' : 'image';
+      currentMediaData.push({ type: type, data: ev.target.result });
+      renderMediaPreview();
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function renderMediaPreview() {
+  const grid = document.getElementById('mediaPreviewGrid');
+  if(!grid) return;
+  grid.innerHTML = currentMediaData.map((m, idx) => {
+    let previewHtml = m.type === 'video' 
+      ? `<video src="${m.data}" style="width:100%;height:100px;object-fit:cover;border-radius:10px;border:1px solid rgba(52,211,153,.2)" autoplay muted loop></video>`
+      : `<img src="${m.data}" style="width:100%;height:100px;object-fit:cover;border-radius:10px;border:1px solid rgba(52,211,153,.2)">`;
+    return `<div style="position:relative;">
+      ${previewHtml}
+      <button type="button" style="position:absolute;top:5px;right:5px;background:rgba(220,38,38,.8);color:#fff;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:12px;" onclick="removeMedia(${idx})">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function removeMedia(idx) {
+  currentMediaData.splice(idx, 1);
+  renderMediaPreview();
+  document.getElementById('fMedia').value = '';
 }
 
 function removeImage() {
-  currentImageData = null;
-  const preview = document.getElementById('imgPreview');
-  preview.src = ''; preview.classList.remove('show');
-  document.getElementById('removeImgBtn').classList.remove('show');
-  document.getElementById('fImage').value = '';
+  currentMediaData = [];
+  renderMediaPreview();
+  const fMed = document.getElementById('fMedia');
+  if(fMed) fMed.value = '';
+  const fImg = document.getElementById('fImage');
+  if(fImg) fImg.value = '';
 }
 
 function resetScanUI() {
@@ -282,12 +310,11 @@ function handleAIScanUpload(e) {
 
   const reader = new FileReader();
   reader.onload = async ev => {
-    currentImageData = ev.target.result;
-    // Set photo preview
-    const preview = document.getElementById('imgPreview');
-    preview.src = currentImageData;
-    preview.classList.add('show');
-    document.getElementById('removeImgBtn').classList.add('show');
+    // Add scanned photo as first media if not already present
+    if(currentMediaData.length === 0) {
+      currentMediaData.push({ type: 'image', data: ev.target.result });
+      renderMediaPreview();
+    }
 
     const apiKey = localStorage.getItem('cv_gemini_key') || '';
 
@@ -295,7 +322,7 @@ function handleAIScanUpload(e) {
       // ── REAL Gemini Vision AI scan ──
       progressEl.textContent = 'Sending image to Gemini AI…';
       try {
-        const result = await scanWithGemini(currentImageData, apiKey, progressEl);
+        const result = await scanWithGemini(ev.target.result, apiKey, progressEl);
         scanBar.style.display   = 'none';
         resultBar.style.display = 'flex';
         document.getElementById('aiResultText').textContent =
@@ -490,11 +517,23 @@ function generateSku() {
 // ── Save product ──
 function saveProduct(e) {
   e.preventDefault();
+  
+  // Handle fallback for legacy code
+  let finalMedia = currentMediaData.length > 0 ? currentMediaData : [];
+  if(finalMedia.length === 0 && editingId) {
+    const existing = products.find(x=>x.id===editingId);
+    if(existing) {
+       if(existing.media) finalMedia = existing.media;
+       else if(existing.image) finalMedia = [{type:'image', data: existing.image}];
+    }
+  }
+
   const p = {
     id:       editingId || Date.now().toString(),
     name:     document.getElementById('fName').value.trim(),
     ref:      document.getElementById('fRef').value.trim(),
     category: document.getElementById('fCategory').value,
+    gender:   document.getElementById('fGender')?.value || '',
     caseSize: document.getElementById('fCaseSize').value,
     caseMat:  document.getElementById('fCaseMat').value,
     bracelet: document.getElementById('fBracelet').value,
@@ -505,7 +544,8 @@ function saveProduct(e) {
     price:    parseFloat(document.getElementById('fPrice').value),
     sku:      document.getElementById('fSku').value.trim(),
     desc:     document.getElementById('fDesc').value.trim(),
-    image:    currentImageData || (editingId ? (products.find(x=>x.id===editingId)||{}).image : null),
+    media:    finalMedia,
+    image:    finalMedia.length > 0 ? finalMedia[0].data : null // Keep image for backwards compatibility
   };
   if (editingId) {
     products = products.map(x => x.id===editingId ? p : x);
@@ -527,6 +567,7 @@ function editProduct(id) {
   document.getElementById('fName').value    = p.name||'';
   document.getElementById('fRef').value     = p.ref||'';
   document.getElementById('fCategory').value= p.category||'';
+  if(document.getElementById('fGender')) document.getElementById('fGender').value = p.gender||'';
   document.getElementById('fCaseSize').value= p.caseSize||'';
   document.getElementById('fCaseMat').value = p.caseMat||'';
   document.getElementById('fBracelet').value= p.bracelet||'';
@@ -537,11 +578,13 @@ function editProduct(id) {
   document.getElementById('fPrice').value   = p.price??0;
   document.getElementById('fSku').value     = p.sku||'';
   document.getElementById('fDesc').value    = p.desc||'';
-  if (p.image) {
-    currentImageData = p.image;
-    const preview = document.getElementById('imgPreview');
-    preview.src = p.image; preview.classList.add('show');
-    document.getElementById('removeImgBtn').classList.add('show');
+  
+  if (p.media && p.media.length > 0) {
+    currentMediaData = [...p.media];
+    renderMediaPreview();
+  } else if (p.image) {
+    currentMediaData = [{type:'image', data: p.image}];
+    renderMediaPreview();
   } else { removeImage(); }
   openModal('Edit Rolex Watch');
 }

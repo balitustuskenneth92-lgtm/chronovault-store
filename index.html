@@ -272,6 +272,13 @@
             <option>Other</option>
           </select>
         </div>
+        <div class="form-group">
+          <label>Gender / Audience</label>
+          <select id="fGender">
+            <option value="">Select…</option>
+            <option>Men's</option><option>Women's</option><option>Unisex</option>
+          </select>
+        </div>
         <div class="form-section-label">🔩 Case &amp; Bracelet</div>
         <div class="form-group">
           <label>Case Size (mm)</label>
@@ -333,22 +340,21 @@
             <button type="button" class="btn-save" style="padding:.7rem 1rem;" onclick="generateSku()" title="Auto-generate SKU">🎲 Generate</button>
           </div>
         </div>
-        <div class="form-section-label">📷 Watch Photo</div>
+        <div class="form-section-label">📷 Watch Media (Photos & Video)</div>
         <div class="form-group full">
-          <label>Watch Image (set separately or auto-filled by scan above)</label>
+          <label>Upload Media (You can select multiple photos/videos. First item is the cover)</label>
           <div class="ai-scan-wrap">
             <div class="img-upload-zone" id="uploadZone">
-              <input type="file" id="fImage" accept="image/*" onchange="handleImageUpload(event)">
+              <input type="file" id="fMedia" accept="image/*,video/*" multiple onchange="handleMediaUpload(event)">
               <div class="upload-icon">📷</div>
-              <p>Click or drag &amp; drop — AI will scan and fill details automatically</p>
+              <p>Click or drag &amp; drop — AI will scan the first photo automatically</p>
             </div>
             <div class="ai-scanning" id="aiScanning">
               <div class="ai-scan-ring"></div>
               <div class="ai-scan-text">AI Scanning Watch…</div>
             </div>
           </div>
-          <img id="imgPreview" class="img-preview" alt="Watch preview">
-          <button type="button" class="remove-img-btn" id="removeImgBtn" onclick="removeImage()">✕ Remove Photo</button>
+          <div id="mediaPreviewGrid" class="media-preview-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:.5rem;margin-top:.6rem;"></div>
           <div class="ai-banner" id="aiBanner">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
             <span id="aiBannerText">AI detected watch details — review and confirm below.</span>
