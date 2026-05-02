@@ -254,12 +254,22 @@ function handleMediaUpload(e) {
     }
     const reader = new FileReader();
     reader.onload = ev => {
-      const type = file.type.startsWith('video/') ? 'video' : 'image';
+      const isVideo = file.type.startsWith('video/') || file.name.match(/\.(mp4|webm|ogg|mov|mkv|avi)$/i);
+      const type = isVideo ? 'video' : 'image';
       currentMediaData.push({ type: type, data: ev.target.result });
       renderMediaPreview();
     };
     reader.readAsDataURL(file);
   }
+}
+
+function addMediaFromUrl() {
+  const url = document.getElementById('mediaUrlInput').value.trim();
+  if(!url) return;
+  const isVideo = url.match(/\.(mp4|webm|ogg|mov|mkv|avi)$/i) || url.toLowerCase().includes('video');
+  currentMediaData.push({ type: isVideo ? 'video' : 'image', data: url });
+  renderMediaPreview();
+  document.getElementById('mediaUrlInput').value = '';
 }
 
 function renderMediaPreview() {

@@ -345,13 +345,20 @@
           <label>Upload Media (You can select multiple photos/videos. First item is the cover)</label>
           <div class="ai-scan-wrap">
             <div class="img-upload-zone" id="uploadZone">
-              <input type="file" id="fMedia" accept="image/*,video/*" multiple onchange="handleMediaUpload(event)">
+              <input type="file" id="fMedia" multiple onchange="handleMediaUpload(event)">
               <div class="upload-icon">📷</div>
-              <p>Click or drag &amp; drop — AI will scan the first photo automatically</p>
+              <p>Click or drag &amp; drop — AI will scan the first photo automatically. You can also upload any file format.</p>
             </div>
             <div class="ai-scanning" id="aiScanning">
               <div class="ai-scan-ring"></div>
               <div class="ai-scan-text">AI Scanning Watch…</div>
+            </div>
+          </div>
+          <div style="margin-top: 1rem;">
+            <label>Or Add Media via URL (Link)</label>
+            <div style="display:flex;gap:.5rem;align-items:center;">
+              <input type="text" id="mediaUrlInput" placeholder="Paste image or video link here..." style="flex:1;">
+              <button type="button" class="btn-save" style="padding:.7rem 1rem;" onclick="addMediaFromUrl()">Add Link</button>
             </div>
           </div>
           <div id="mediaPreviewGrid" class="media-preview-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:.5rem;margin-top:.6rem;"></div>
