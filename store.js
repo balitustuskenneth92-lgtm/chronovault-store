@@ -141,9 +141,20 @@ function openProductDetail(id) {
             </div>`).join('')}
         </div>
         ${p.desc ? `<div class="pd-desc">${p.desc}</div>` : ''}
-        <div class="pd-actions">
-          <button class="pd-btn-cart" onclick="addToCart('${p.id}');closeProductDetail()" ${parseInt(p.qty)<=0 ? 'disabled style="opacity:0.4;cursor:not-allowed"' : ''}>🛒 Add to Cart</button>
-          <button class="pd-btn-buy"  onclick="buyNow('${p.id}');closeProductDetail()" ${parseInt(p.qty)<=0 ? 'disabled style="opacity:0.4;cursor:not-allowed"' : ''}>⚡ Buy Now</button>
+        <div class="pd-actions" style="display:flex;flex-direction:column;gap:1rem;">
+          <div style="display:flex;align-items:center;gap:1rem;">
+            <label style="font-size:0.85rem;color:rgba(209,250,229,.6);text-transform:uppercase;letter-spacing:1px;font-weight:600;">Quantity</label>
+            <div style="display:flex;align-items:center;background:rgba(6,78,59,.3);border:1px solid rgba(52,211,153,.2);border-radius:8px;padding:0.2rem;">
+              <button onclick="const q=document.getElementById('pdQty'); if(q.value>1)q.value--" style="background:transparent;border:none;color:#fff;width:32px;height:32px;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:color 0.2s;" onmouseover="this.style.color='#fbbf24'" onmouseout="this.style.color='#fff'">-</button>
+              <input type="number" id="pdQty" value="1" min="1" max="${p.qty}" style="width:40px;text-align:center;background:transparent;border:none;color:#fff;font-size:1rem;font-weight:600;font-family:inherit;outline:none;" readonly>
+              <button onclick="const q=document.getElementById('pdQty'); if(q.value<${p.qty})q.value++" style="background:transparent;border:none;color:#fff;width:32px;height:32px;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:color 0.2s;" onmouseover="this.style.color='#fbbf24'" onmouseout="this.style.color='#fff'">+</button>
+            </div>
+            <span style="font-size:0.8rem;color:rgba(209,250,229,.4);">${p.qty} pcs max</span>
+          </div>
+          <div style="display:flex;gap:0.5rem;width:100%;">
+            <button class="pd-btn-cart" onclick="addToCart('${p.id}', parseInt(document.getElementById('pdQty').value));closeProductDetail()" ${parseInt(p.qty)<=0 ? 'disabled style="opacity:0.4;cursor:not-allowed"' : ''}>🛒 Add to Cart</button>
+            <button class="pd-btn-buy"  onclick="buyNow('${p.id}', parseInt(document.getElementById('pdQty').value));closeProductDetail()" ${parseInt(p.qty)<=0 ? 'disabled style="opacity:0.4;cursor:not-allowed"' : ''}>⚡ Buy Now</button>
+          </div>
         </div>
       </div>
     </div>`;
@@ -153,23 +164,27 @@ function openProductDetail(id) {
 function closeProductDetail() { document.getElementById('productDetailOverlay').classList.remove('open'); }
 
 // ── Cart ──
-function addToCart(id) {
+function addToCart(id, qtyToAdd = 1) {
   const product = products.find(p=>p.id===id);
   if (!product) return;
   const existing = cart.find(item=>item.id===id);
   if (existing) {
-    if (existing.cartQty >= product.qty) { showToast('Maximum stock reached.'); return; }
-    existing.cartQty++;
+    if (existing.cartQty + qtyToAdd <= product.qty) {
+      existing.cartQty += qtyToAdd;
+    } else {
+      existing.cartQty = product.qty;
+      showToast(`Max ${product.qty} pcs available.`);
+    }
   } else {
-    cart.push({...product, cartQty:1});
+    cart.push({ ...product, cartQty: Math.min(qtyToAdd, product.qty) });
   }
-  updateCartUI(); showToast('✓ Added to cart!');
+  updateCartUI();
+  showToast(`🛒 ${product.name} added to cart!`);
 }
 
-function buyNow(id) {
-  cart = [];
-  const product = products.find(p=>p.id===id);
-  if (product) { cart.push({...product, cartQty:1}); updateCartUI(); openCheckout(); }
+function buyNow(id, qtyToAdd = 1) {
+  addToCart(id, qtyToAdd);
+  openCart();
 }
 
 function removeFromCart(id) { cart = cart.filter(item=>item.id!==id); updateCartUI(); }

@@ -678,6 +678,7 @@ async function saveSale(e) {
     buyerAddr:    document.getElementById('sBuyerAddr').value.trim(),
     watchId, watchName: p.name||document.getElementById('sSoldWatch').selectedOptions[0]?.text||'',
     watchRef:  document.getElementById('sSoldRef').value.trim(),
+    saleQty:   parseInt(document.getElementById('sSaleQty').value) || 1,
     salePrice: parseFloat(document.getElementById('sSalePrice').value),
     saleDate:  document.getElementById('sSaleDate').value,
     payStatus: document.getElementById('sPayStatus').value,
@@ -688,7 +689,7 @@ async function saveSale(e) {
     showToast('✓ Sale record updated!');
   } else {
     buyers.push(entry);
-    if (p.id) { p.qty = Math.max(0,(p.qty||0)-1); await save(); }
+    if (p.id) { p.qty = Math.max(0,(p.qty||0)-entry.saleQty); await save(); }
     showToast('✓ Sale recorded successfully!');
   }
   await saveBuyers(); closeSaleModal();
@@ -724,7 +725,7 @@ function renderBuyers() {
         <div class="buyer-avatar">${initials}</div>
         <div><strong>${b.buyerName}</strong>${b.buyerContact?`<br><span style="font-size:.72rem;color:var(--muted)">${b.buyerContact}</span>`:''}</div>
       </div></td>
-      <td><strong style="font-size:.88rem">${b.watchName||'—'}</strong></td>
+      <td><strong style="font-size:.88rem">${b.watchName||'—'}</strong>${b.saleQty > 1 ? ` <span style="color:var(--gold-400);font-size:0.8rem">x${b.saleQty}</span>` : ''}</td>
       <td><span style="font-family:monospace;font-size:.82rem;color:var(--go4)">${b.watchRef||'—'}</span></td>
       <td><strong>${fmt(b.salePrice)}</strong></td>
       <td style="font-size:.82rem;color:var(--muted)">${dateStr}</td>
@@ -747,6 +748,7 @@ function editSale(id) {
   document.getElementById('sBuyerAddr').value    = b.buyerAddr||'';
   document.getElementById('sSoldWatch').value    = b.watchId||'';
   document.getElementById('sSoldRef').value      = b.watchRef||'';
+  document.getElementById('sSaleQty').value      = b.saleQty||1;
   document.getElementById('sSalePrice').value    = b.salePrice||'';
   document.getElementById('sSaleDate').value     = b.saleDate||'';
   document.getElementById('sPayStatus').value    = b.payStatus||'';
