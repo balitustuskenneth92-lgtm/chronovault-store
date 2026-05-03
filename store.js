@@ -233,6 +233,15 @@ function closeCheckout() { document.getElementById('checkoutOverlay').classList.
 // ── Checkout — writes back to API so data persists ──
 async function processCheckout(e) {
   e.preventDefault();
+  const btn = e.target.querySelector('button[type="submit"]');
+  const originalText = btn ? btn.textContent : 'Place Order';
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Processing...';
+    btn.style.opacity = '0.7';
+    btn.style.cursor = 'wait';
+  }
+
   const buyerName    = document.getElementById('cName').value.trim();
   const buyerEmail   = document.getElementById('cEmail').value.trim();
   const buyerContact = document.getElementById('cPhone').value.trim();
@@ -256,7 +265,16 @@ async function processCheckout(e) {
   // Validate stock
   for (let item of cart) {
     const p = products.find(x=>x.id===item.id);
-    if (!p || p.qty < item.cartQty) { showToast(`Sorry, ${item.name} is out of stock.`); return; }
+    if (!p || p.qty < item.cartQty) { 
+      showToast(`Sorry, ${item.name} is out of stock.`); 
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = originalText;
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+      }
+      return; 
+    }
   }
 
   // Build new buyer records
@@ -294,6 +312,13 @@ async function processCheckout(e) {
     // Fallback to localStorage if server is unavailable
     localStorage.setItem('cv_buyers',  JSON.stringify(buyers));
     localStorage.setItem('cv_watches', JSON.stringify(products));
+  }
+
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = originalText;
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
   }
 
   cart=[]; updateCartUI(); renderGrid(); closeCheckout();

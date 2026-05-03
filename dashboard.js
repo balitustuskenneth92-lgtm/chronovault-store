@@ -530,10 +530,17 @@ function generateSku() {
   document.getElementById('fSku').value = `CV-${prefix}-${randomNum}`;
 }
 
-// ── Save product ──
-function saveProduct(e) {
+async function saveProduct(e) {
   e.preventDefault();
-  
+  const btn = document.getElementById('saveBtn');
+  const originalText = btn ? btn.textContent : '💾 Save Watch';
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+    btn.style.opacity = '0.7';
+    btn.style.cursor = 'wait';
+  }
+
   // Handle fallback for legacy code
   let finalMedia = currentMediaData.length > 0 ? currentMediaData : [];
   if(finalMedia.length === 0 && editingId) {
@@ -565,12 +572,19 @@ function saveProduct(e) {
   };
   if (editingId) {
     products = products.map(x => x.id===editingId ? p : x);
-    save(); closeModal();
+    await save(); closeModal();
     showSuccessPopup('Watch Updated!', `"${p.name}" has been successfully updated.`, '✏️');
   } else {
     products.push(p);
-    save(); closeModal();
+    await save(); closeModal();
     showSuccessPopup('Watch Added!', `"${p.name}" has been added to ChronoVault!`, '⌚');
+  }
+
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = originalText;
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
   }
 }
 
@@ -642,8 +656,17 @@ function closeSaleModal() {
   document.getElementById('sEditId').value = '';
 }
 
-function saveSale(e) {
+async function saveSale(e) {
   e.preventDefault();
+  const btn = e.target.querySelector('button[type="submit"]');
+  const originalText = btn ? btn.textContent : '💾 Save Sale';
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+    btn.style.opacity = '0.7';
+    btn.style.cursor = 'wait';
+  }
+
   const sId = document.getElementById('sEditId').value;
   const watchId = document.getElementById('sSoldWatch').value;
   const p = products.find(x => x.id===watchId)||{};
@@ -665,10 +688,17 @@ function saveSale(e) {
     showToast('✓ Sale record updated!');
   } else {
     buyers.push(entry);
-    if (p.id) { p.qty = Math.max(0,(p.qty||0)-1); save(); }
+    if (p.id) { p.qty = Math.max(0,(p.qty||0)-1); await save(); }
     showToast('✓ Sale recorded successfully!');
   }
-  saveBuyers(); closeSaleModal();
+  await saveBuyers(); closeSaleModal();
+
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = originalText;
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+  }
 }
 
 function renderBuyers() {
@@ -794,6 +824,16 @@ async function saveStock() {
   if (stockTargetId === null || stockPendingQty === null) return;
   const p = products.find(x => x.id === stockTargetId);
   if (!p) return;
+  
+  const btn = document.getElementById('stockSaveBtn');
+  const originalText = btn ? btn.textContent : '💾 Save Stock';
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+    btn.style.opacity = '0.7';
+    btn.style.cursor = 'wait';
+  }
+
   const oldQty = p.qty;
   p.qty = stockPendingQty;
   await save();
@@ -802,6 +842,13 @@ async function saveStock() {
   // Refresh inventory grid if visible
   const inv = document.getElementById('panelInventory');
   if (inv && inv.classList.contains('active')) renderInventoryGrid();
+
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = originalText;
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+  }
 }
 
 function closeStockModal() {
