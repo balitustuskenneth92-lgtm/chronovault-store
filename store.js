@@ -24,6 +24,13 @@ async function loadProducts() {
   }
   renderGrid();
   updateCartUI();
+  
+  // Hide loading screen
+  const loader = document.getElementById('loadingOverlay');
+  if (loader) {
+    loader.style.opacity = '0';
+    setTimeout(() => loader.style.display = 'none', 400);
+  }
 }
 
 // ── Filter ──

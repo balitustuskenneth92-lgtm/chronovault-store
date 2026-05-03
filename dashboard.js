@@ -34,6 +34,13 @@ async function loadData() {
         buyers = JSON.parse(localStorage.getItem('cv_buyers') || '[]');
         renderTable(); updateStats(); renderBuyers(); updateBuyerStats();
     }
+    
+    // Hide loading screen
+    const loader = document.getElementById('loadingOverlay');
+    if (loader) {
+        loader.style.opacity = '0';
+        setTimeout(() => loader.style.display = 'none', 400);
+    }
 }
 loadData();
 
