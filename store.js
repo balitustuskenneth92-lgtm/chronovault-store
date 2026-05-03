@@ -38,7 +38,7 @@ function setFilter(cat, btn) {
 function renderGrid() {
   const q = (document.getElementById('storeSearch').value||'').toLowerCase();
   let available = products.filter(p => {
-    const matchQty = parseInt(p.qty||0) > 0;
+    const matchQty = true; // Show all items, even out of stock
     
     let matchCat = true;
     if (activeFilter === 'Men') {
@@ -77,7 +77,7 @@ function renderGrid() {
 
     return `
     <div class="card" onclick="openProductDetail('${p.id}')">
-      <div class="badge-stock">${p.qty} In Stock</div>
+      <div class="badge-stock" ${parseInt(p.qty)<=0 ? 'style="background:rgba(220,38,38,.8)"' : ''}>${parseInt(p.qty)<=0 ? 'Out of Stock' : p.qty + ' In Stock'}</div>
       <div class="card-img-wrap">
         ${mainMedia}
         <div class="card-overlay">
@@ -91,8 +91,8 @@ function renderGrid() {
         ${p.caseMat ? `<div class="card-meta">${p.caseMat}${p.caseSize?' · '+p.caseSize+'mm':''}</div>` : ''}
         <div class="card-price">${fmt(p.price||0)}</div>
         <div class="card-actions">
-          <button class="btn-add" onclick="event.stopPropagation();addToCart('${p.id}')">Add to Cart</button>
-          <button class="btn-buy" onclick="event.stopPropagation();buyNow('${p.id}')">Buy Now</button>
+          <button class="btn-add" onclick="event.stopPropagation();addToCart('${p.id}')" ${parseInt(p.qty)<=0 ? 'disabled style="opacity:0.4;cursor:not-allowed"' : ''}>Add to Cart</button>
+          <button class="btn-buy" onclick="event.stopPropagation();buyNow('${p.id}')" ${parseInt(p.qty)<=0 ? 'disabled style="opacity:0.4;cursor:not-allowed"' : ''}>Buy Now</button>
         </div>
       </div>
     </div>
@@ -142,8 +142,8 @@ function openProductDetail(id) {
         </div>
         ${p.desc ? `<div class="pd-desc">${p.desc}</div>` : ''}
         <div class="pd-actions">
-          <button class="pd-btn-cart" onclick="addToCart('${p.id}');closeProductDetail()">🛒 Add to Cart</button>
-          <button class="pd-btn-buy"  onclick="buyNow('${p.id}');closeProductDetail()">⚡ Buy Now</button>
+          <button class="pd-btn-cart" onclick="addToCart('${p.id}');closeProductDetail()" ${parseInt(p.qty)<=0 ? 'disabled style="opacity:0.4;cursor:not-allowed"' : ''}>🛒 Add to Cart</button>
+          <button class="pd-btn-buy"  onclick="buyNow('${p.id}');closeProductDetail()" ${parseInt(p.qty)<=0 ? 'disabled style="opacity:0.4;cursor:not-allowed"' : ''}>⚡ Buy Now</button>
         </div>
       </div>
     </div>`;
@@ -245,8 +245,10 @@ async function processCheckout(e) {
       fetch(apiBase + '/api/watches'),
       fetch(apiBase + '/api/buyers')
     ]);
-    products = await watchRes.json();
-    buyers   = await buyerRes.json();
+    const fetchedProducts = await watchRes.json();
+    const fetchedBuyers   = await buyerRes.json();
+    if (fetchedProducts && fetchedProducts.length > 0) products = fetchedProducts;
+    if (fetchedBuyers && fetchedBuyers.length > 0) buyers = fetchedBuyers;
   } catch (err) {
     // fallback: use current in-memory state
   }

@@ -14,16 +14,17 @@ async function loadData() {
         const buyerRes = await fetch(apiBase + '/api/buyers');
         buyers = await buyerRes.json();
 
-        // One-time migration: If API is empty but localStorage has data, migrate it!
-        if (products.length === 0 && localStorage.getItem('cv_watches') && !localStorage.getItem('cv_migrated')) {
-            products = JSON.parse(localStorage.getItem('cv_watches'));
+        // Vercel Ephemeral DB Protection: If API is empty but localStorage has data, use localStorage!
+        const localWatches = JSON.parse(localStorage.getItem('cv_watches') || '[]');
+        const localBuyers = JSON.parse(localStorage.getItem('cv_buyers') || '[]');
+        
+        if (products.length === 0 && localWatches.length > 0) {
+            products = localWatches;
             await fetch(apiBase + '/api/watches', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(products) });
-            localStorage.setItem('cv_migrated', 'true');
         }
-        if (buyers.length === 0 && localStorage.getItem('cv_buyers') && !localStorage.getItem('cv_migrated_buyers')) {
-            buyers = JSON.parse(localStorage.getItem('cv_buyers'));
+        if (buyers.length === 0 && localBuyers.length > 0) {
+            buyers = localBuyers;
             await fetch(apiBase + '/api/buyers', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(buyers) });
-            localStorage.setItem('cv_migrated_buyers', 'true');
         }
 
         renderTable(); updateStats(); renderBuyers(); updateBuyerStats();
